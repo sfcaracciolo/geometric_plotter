@@ -4,8 +4,8 @@ import geometric_tools
 
 class Plotter:
 
-    def __init__(self, **kwargs) -> None:
-        self.figure(**kwargs)
+    def __init__(self, computed_zorder, **kwargs) -> None:
+        self.figure(computed_zorder, **kwargs)
 
     @staticmethod
     def set_export():
@@ -31,12 +31,12 @@ class Plotter:
             )
 
 
-    def figure(self, **kwargs):
+    def figure(self, computed_zorder, **kwargs):
         self.fig = plt.figure(**kwargs)
 
         self.ax = self.fig.add_subplot(
             projection='3d',
-            computed_zorder=True,
+            computed_zorder=computed_zorder,
         )
         self.ax.axis('off')
      
@@ -58,7 +58,7 @@ class Plotter:
         self.ax.view_init(*view)
         self.ax.set_box_aspect([ub - lb for lb, ub in (getattr(self.ax, f'get_{a}lim')() for a in 'xyz')], zoom=zoom)
 
-    def add_trisurf(self, nodes, faces, vertex_values=None, translate=(0,0,0), colorbar=False, cmap='viridis', vmin=0, vmax=1, **kwargs):
+    def add_trisurf(self, nodes, faces, vertex_values=None, translate=(0,0,0), colorbar=False, cmap='viridis', vmin=0, vmax=1, location='right', **kwargs):
 
         p = self.ax.plot_trisurf(
             nodes[:,0]-translate[0],
@@ -72,10 +72,10 @@ class Plotter:
             norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
             cmap = plt.get_cmap(cmap)
             m = matplotlib.cm.ScalarMappable(cmap=cmap, norm=norm)
-            fc = m.to_rgba(triangle_values) # fc = cmap(norm(triangle_values))
             if colorbar:
-                cbar = self.fig.colorbar(m, ax=self.ax, location='right', extend='both')
+                cbar = self.fig.colorbar(m, ax=self.ax, location=location, extend='both')
                 cbar.minorticks_on()
+            fc = m.to_rgba(triangle_values) # fc = cmap(norm(triangle_values))
         else:
             fc = 'w'
 
@@ -83,6 +83,17 @@ class Plotter:
         p.set_edgecolors('k')
 
         return p 
+
+    @staticmethod
+    def colorbar(cmap='viridis', vmin=0, vmax=1, **kwargs):
+        p = Plotter(False, figsize=(2,5))
+        cax = plt.axes([0.5, 0.1, 0.1, 0.9]) # left, bottom, width, height
+        norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
+        cmap = plt.get_cmap(cmap)
+        m = matplotlib.cm.ScalarMappable(cmap=cmap, norm=norm)
+        cbar = p.fig.colorbar(m, cax=cax, **kwargs)
+        cbar.minorticks_on()
+        return p
 
     def add_scatter(self, nodes, translate=(0,0,0), **kwargs):
         # s is markersize

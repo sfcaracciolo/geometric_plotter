@@ -70,3 +70,12 @@ p.save(folder='figs/', name=f'{filename}')
 ```
 
 <img src="figs/color.png" alt="drawing" width="400"/>
+
+#### `colorbar alone`
+
+```python
+p = Plotter.colorbar(cmap='turbo',vmin=-1, vmax=2, extend='both')
+p.save(folder='figs/', name=f'{filename}')
+```
+
+<img src="figs/cbar.png" alt="drawing" width=""/>
