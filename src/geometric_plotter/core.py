@@ -1,5 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt 
+import numpy as np
 import geometric_tools
 
 class Plotter:
@@ -68,6 +69,9 @@ class Plotter:
             **kwargs
         )
         if vertex_values is not None:
+            if vertex_values.ndim > 1:
+                vertex_values = np.ravel(vertex_values)
+
             triangle_values = geometric_tools.interp_vertices_values_to_triangles(nodes, faces, vertex_values)
             norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
             cmap = plt.get_cmap(cmap)
