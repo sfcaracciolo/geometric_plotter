@@ -2,11 +2,19 @@ import matplotlib
 import matplotlib.pyplot as plt 
 import numpy as np
 import geometric_tools
+import sys 
 
 class Plotter:
 
-    def __init__(self, computed_zorder, **kwargs) -> None:
+    def __init__(self, computed_zorder=False, **kwargs) -> None:
+        try:
+            if sys.argv[1] == '--save': Plotter.set_export() 
+        except IndexError:
+            # print('Showing plots ...')
+            pass
+        
         self.figure(computed_zorder, **kwargs)
+
 
     @staticmethod
     def set_export():
