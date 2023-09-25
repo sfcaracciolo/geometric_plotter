@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import geometric_tools
 import sys 
+import mpl_toolkits.mplot3d.art3d as art3d
+import matplotlib as mpl
 
 class Plotter:
 
@@ -144,3 +146,13 @@ class Plotter:
         normals = geometric_tools.compute_triangle_normals(nodes, faces)
         centers = geometric_tools.compute_triangle_barycenters(nodes, faces)
         return self.add_quiver(centers, normals, **kwargs)
+
+    def add_patch(self, patch, **kwargs):
+        self.ax.add_patch(patch)
+        art3d.pathpatch_2d_to_3d(patch, **kwargs)
+
+    def add_line(self, a, b, patch_kw, **kwargs):
+        self.add_patch(mpl.patches.ConnectionPatch(a, b, 'data', **patch_kw),**kwargs)
+
+    def add_circle(self, center, radius, patch_kw, **kwargs):
+        self.add_patch(plt.Circle(center, radius=radius, **patch_kw),**kwargs)
