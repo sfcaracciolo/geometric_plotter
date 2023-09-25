@@ -114,7 +114,7 @@ class Plotter:
         cbar.minorticks_on()
         return p
 
-    def add_scatter(self, nodes, translate=(0,0,0), **kwargs):
+    def add_scatter(self, nodes, translate=(0,0,0), texts=None, txt_kw={}, **kwargs):
         # s is markersize
         p = self.ax.scatter(
             nodes[:,0]-translate[0],
@@ -125,6 +125,17 @@ class Plotter:
             edgecolors = 'none',
             **kwargs,
         )
+
+        if texts is not None:
+            x_offset = txt_kw.pop('x_offset', None)
+            y_offset = txt_kw.pop('y_offset', None)
+            z_offset = txt_kw.pop('z_offset', None)
+            for i, (pt, t) in enumerate(zip(nodes, texts)):
+                x, y, z = pt.tolist()
+                if x_offset is not None: x -= x_offset[i]
+                if y_offset is not None: y -= y_offset[i]
+                if z_offset is not None: z -= z_offset[i]
+                self.ax.text(x, y, z, t, **txt_kw)
 
         return p
     
