@@ -6,14 +6,17 @@ import sys
 
 class Plotter:
 
-    def __init__(self, computed_zorder=False, **kwargs) -> None:
+    def __init__(self, _2d=False, computed_zorder=False, **kwargs) -> None:
         try:
             if sys.argv[1] == '--save': Plotter.set_export() 
         except IndexError:
             # print('Showing plots ...')
             pass
         
-        self.figure(computed_zorder, **kwargs)
+        if _2d:
+            self.figure2d(**kwargs)
+        else:
+            self.figure3d(computed_zorder, **kwargs)
 
 
     @staticmethod
@@ -39,8 +42,10 @@ class Plotter:
                 }
             )
 
+    def figure2d(self, nrows=1, ncols=1, **kwargs):
+        self.fig, self.axs = plt.subplots(nrows=1, ncols=1, **kwargs)
 
-    def figure(self, computed_zorder, **kwargs):
+    def figure3d(self, computed_zorder, **kwargs):
         self.fig = plt.figure(**kwargs)
 
         self.ax = self.fig.add_subplot(
