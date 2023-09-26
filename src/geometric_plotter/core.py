@@ -44,8 +44,10 @@ class Plotter:
                 }
             )
 
-    def figure2d(self, nrows=1, ncols=1, **kwargs):
-        self.fig, self.axs = plt.subplots(nrows=1, ncols=1, **kwargs)
+    def figure2d(self, **kwargs):
+        nrows = kwargs.pop('nrows', 1)
+        ncols = kwargs.pop('ncols', 1)
+        self.fig, self.axs = plt.subplots(nrows=nrows, ncols=ncols, **kwargs)
 
     def figure3d(self, computed_zorder, **kwargs):
         self.fig = plt.figure(**kwargs)
