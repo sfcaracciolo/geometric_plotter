@@ -5,7 +5,7 @@ import geometric_tools
 import sys 
 import mpl_toolkits.mplot3d.art3d as art3d
 import matplotlib as mpl
-
+from typing import Tuple
 class Plotter:
 
     def __init__(self, _2d=False, computed_zorder=False, **kwargs) -> None:
@@ -169,3 +169,41 @@ class Plotter:
 
     def add_circle(self, center, radius, patch_kw, **kwargs):
         self.add_patch(plt.Circle(center, radius=radius, **patch_kw),**kwargs)
+
+    def bland_altman(self, ax, data1, data2, rawdata=None):
+
+        _diff = data1 - data2 # Difference between data1 and data2
+        _sum = (data1 + data2)/2.
+        ax.scatter(_sum, _diff, s=3, color='k')
+
+        if rawdata is not None:
+            data1, data2 = rawdata
+            _diff = data1 - data2 # Difference between data1 and data2
+
+        md = np.mean(_diff) # Mean of the difference
+        sd = np.std(_diff, axis=0) # Standard deviation of the difference
+        sup = md + 1.96*sd
+        inf = md - 1.96*sd
+
+        ax.axhline(md, color='gray', linestyle='--', linewidth=.5)
+        ax.axhline(sup, color='gray', linestyle='--', linewidth=.5)
+        ax.axhline(inf, color='gray', linestyle='--', linewidth=.5)
+        ax.text(.1,.9,f'$\\mu = {md:.3f}$', transform=ax.transAxes)
+        ax.text(.1,.8,f'$\\sigma = {sd:.3f}$', transform=ax.transAxes)
+
+        _max = max(abs(sup), abs(inf))
+        ax.set_ylim((-_max*3, _max*3))
+
+    def pearson(self, ax, data1, data2, rawdata=None):
+        ax.scatter(data1, data2, s=3, color='k')
+        X_plot = np.linspace(*ax.get_xlim(), 100)
+        
+        if rawdata is not None:
+            data1, data2 = rawdata
+        # Add correlation line
+        m, b = np.polyfit(data1, data2, 1)
+        rho = np.corrcoef(data1, data2)[0,1]
+        ax.plot(X_plot, m*X_plot + b, '--', color='gray', linewidth=.5)
+        ax.plot(X_plot, X_plot, '--', color='gray', linewidth=.5)
+        ax.text(.1,.9,f'$\\rho = {rho:.3f}$', transform=ax.transAxes)
+        ax.text(.1,.8,f'$m = {m:.3f}$', transform=ax.transAxes)
