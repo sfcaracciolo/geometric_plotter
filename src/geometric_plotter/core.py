@@ -67,9 +67,9 @@ class Plotter:
     def save(folder, name):
         if matplotlib.get_backend() == 'pgf':
             path = folder + name
-            plt.savefig(path +'.eps', dpi = 300, orientation = 'portrait', bbox_inches = 'tight')
-            plt.savefig(path +'.pdf', dpi = 300, orientation = 'portrait', bbox_inches = 'tight')
-            plt.savefig(path +'.png', dpi = 300, orientation = 'portrait', bbox_inches = 'tight')
+            # plt.savefig(path +'.eps', orientation = 'portrait', bbox_inches = 'tight')
+            plt.savefig(path +'.pdf', orientation = 'portrait', bbox_inches = 'tight')
+            # plt.savefig(path +'.png', dpi = 300, orientation = 'portrait', bbox_inches = 'tight')
 
 
     def camera(self, view, zoom):
@@ -170,15 +170,11 @@ class Plotter:
     def add_circle(self, center, radius, patch_kw, **kwargs):
         self.add_patch(plt.Circle(center, radius=radius, **patch_kw),**kwargs)
 
-    def bland_altman(self, ax, data1, data2, rawdata=None):
+    def bland_altman(self, ax, data1, data2, **kwargs):
 
         _diff = data1 - data2 # Difference between data1 and data2
         _sum = (data1 + data2)/2.
-        ax.scatter(_sum, _diff, s=3, color='k')
-
-        if rawdata is not None:
-            data1, data2 = rawdata
-            _diff = data1 - data2 # Difference between data1 and data2
+        ax.scatter(_sum, _diff, **kwargs)
 
         md = np.mean(_diff) # Mean of the difference
         sd = np.std(_diff, axis=0) # Standard deviation of the difference
@@ -193,13 +189,12 @@ class Plotter:
 
         _max = max(abs(sup), abs(inf))
         ax.set_ylim((-_max*3, _max*3))
-
-    def pearson(self, ax, data1, data2, rawdata=None):
-        ax.scatter(data1, data2, s=3, color='k')
+    
+    def pearson(self, ax, data1, data2, **kwargs):
+        # ax.hist2d(data1, data2, bins=200) # , s=3, color='k')
+        ax.scatter(data1, data2, **kwargs)
         X_plot = np.linspace(*ax.get_xlim(), 100)
         
-        if rawdata is not None:
-            data1, data2 = rawdata
         # Add correlation line
         m, b = np.polyfit(data1, data2, 1)
         rho = np.corrcoef(data1, data2)[0,1]
